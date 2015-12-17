@@ -19,6 +19,6 @@
 
 	<package>kuprod</package>
 	<package>roll-kuprod-usersguide</package>
-
+	<package>screen</package>
 
 </kickstart>

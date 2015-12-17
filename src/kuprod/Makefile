@@ -60,6 +60,10 @@ REDHAT.ROOT = $(CURDIR)/../../
 -include $(ROCKSROOT)/etc/Rules.mk
 include Rules.mk
 
+CRON_DAILY_DIR=/etc/cron.daily/
+
+CRON_DAILY_SCRIPTS = \
+	securityUpdates
 
 build:
 	gunzip -c $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
@@ -75,6 +79,9 @@ install::
 		cd $(NAME)-$(VERSION);				\
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT)/$(NAME) install;\
 	)
+	
+	install -m 755 $(CRON_DAILY_SCRIPTS) ${CRON_DAILY_DIR}
 
 clean::
 	rm -rf $(NAME)-$(VERSION)
+	rm -rf $(SCRIPTS)
