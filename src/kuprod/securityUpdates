@@ -34,7 +34,8 @@ usage ()
 # ....................................
 SetDefaults () {
    PREVDIR=pwd
-   WORKINGDIR=/state/partition1/site-roll/rocks/src/roll/security-updates
+   ROLLDIR=/state/partition1/site-roll/rocks/src/roll
+   WORKINGDIR=$ROLLDIR/security-updates
    TO="aimee.stewart@ku.edu"
    idx=`expr index $HOSTNAME .`
    BASEHOSTNAME=${HOSTNAME:0:idx-1}
@@ -61,6 +62,11 @@ TimeStamp () {
 ### Make and install new roll
 # ....................................
 PrepareRoll() {
+   if [ ! -d "$WORKINGDIR" ]; then
+   	cd $ROLLDIR
+   	git clone https://github.com/rocksclusters/security-updates
+   fi
+   
    cd $WORKINGDIR
    make roll
    rocks add roll os-6.2-security-updates-$VERSION-0.x86_64.disk1.iso
