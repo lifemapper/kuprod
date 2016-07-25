@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-# Download and install latest security updates for CentOS/Rocks
-# using Rocks roll at https://github.com/rocksclusters/security-updates.
+# Download and install latest security updates for CentOS/Rocks by cloning
+# the Rocks roll at https://github.com/rocksclusters/security-updates into
+# the /state/partition1/site-roll/rocks/src/roll/ directory
 # Move this script to the /etc/cron.daily directory
 
 #
@@ -34,8 +35,15 @@ usage ()
 # ....................................
 SetDefaults () {
    PREVDIR=pwd
-   ROLLDIR=/state/partition1/site-roll/rocks/src/roll
-   WORKINGDIR=$ROLLDIR/security-updates
+   WORKINGDIR=/state/partition1/site-roll/rocks/src/roll/security-updates
+   LR=`rocks list roll os-6.2-security-updates | grep security | awk '{print $1}'`
+   
+   if [ "$LR" -eq 'os-6.2-security-updates:' ]; then
+       EXISTING_ROLL=true
+   else
+       EXISTING_ROLL=false
+   fi
+      
    TO="aimee.stewart@ku.edu"
    idx=`expr index $HOSTNAME .`
    BASEHOSTNAME=${HOSTNAME:0:idx-1}
@@ -62,11 +70,6 @@ TimeStamp () {
 ### Make and install new roll
 # ....................................
 PrepareRoll() {
-   if [ ! -d "$WORKINGDIR" ]; then
-   	cd $ROLLDIR
-   	git clone https://github.com/rocksclusters/security-updates
-   fi
-   
    cd $WORKINGDIR
    make roll
    rocks add roll os-6.2-security-updates-$VERSION-0.x86_64.disk1.iso
@@ -102,6 +105,8 @@ fi
 
 SetDefaults
 PrepareRoll
-ApplyUpdates
+if [ "EXISTING_ROLL" = true ]; then
+    ApplyUpdates
+fi
 SendEmailAndReturn
 
