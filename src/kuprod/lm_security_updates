@@ -17,7 +17,7 @@
 # Finally, make sure everything is covered:
 #   - yum update --skip-broken
 # ..............................................................................
-yum update --skip-broken --exclude bind-9.8.2-0.30.rc1.el6_6.2.x86_64 bind-utils-9.8.2-0.30.rc1.el6_6.2.x86_64 nfs-utils-1.2.3-54.el6.x86_64
+# ???yum update --skip-broken --exclude bind-9.8.2-0.30.rc1.el6_6.2.x86_64 bind-utils-9.8.2-0.30.rc1.el6_6.2.x86_64 nfs-utils-1.2.3-54.el6.x86_64
 # ....................................
 usage () 
 {
@@ -34,11 +34,11 @@ usage ()
 ### define varibles
 # ....................................
 SetDefaults () {
-   PREVDIR=pwd
+   PREVDIR=`pwd`
    WORKINGDIR=/state/partition1/site-roll/rocks/src/roll/security-updates
-   LR=`rocks list roll os-6.2-security-updates | grep security | awk '{print $1}'`
+   ROLLNAME=os-6.2-security-updates
    
-   if [ "$LR" -eq 'os-6.2-security-updates:' ]; then
+   if [ -d $WORKINGDIR ]; then
        EXISTING_ROLL=true
    else
        EXISTING_ROLL=false
@@ -72,8 +72,8 @@ TimeStamp () {
 PrepareRoll() {
    cd $WORKINGDIR
    make roll
-   rocks add roll os-6.2-security-updates-$VERSION-0.x86_64.disk1.iso
-   rocks enable roll os-security-updates   
+   rocks add roll $ROLLNAME-$VERSION-0.x86_64.disk1.iso
+   rocks enable roll $ROLLNAME   
    (cd /export/rocks/install; rocks create distro)
    yum clean all
 }
@@ -105,8 +105,10 @@ fi
 
 SetDefaults
 PrepareRoll
-if [ "EXISTING_ROLL" = true ]; then
+if [ "$EXISTING_ROLL" = true ]; then
     ApplyUpdates
+else
+    echo $ROLLNAME "roll does not exist" >> $LOG
 fi
 SendEmailAndReturn
 
