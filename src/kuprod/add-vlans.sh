@@ -61,13 +61,6 @@ for vmc in $VMCONTAINERS; do
     NAME=${vmc%:*}
     test_vlans $NAME
 done
+rocks sync config
 
 time_stamp "# End"
-
-
-# /opt/rocks/bin/rocks add host interface vm-container-0-0 vlan2
-# /opt/rocks/bin/rocks set host interface name vm-container-0-0 vlan2 vm-container-0-0
-# /opt/rocks/bin/rocks set host interface subnet vm-container-0-0 vlan2 private
-# /opt/rocks/bin/rocks set host interface vlan vm-container-0-0 vlan2 2:q
-
-# rocks sync config
