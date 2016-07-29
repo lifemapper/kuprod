@@ -63,7 +63,7 @@ include Rules.mk
 CRON_DAILY_DIR=/etc/cron.daily/
 
 CRON_DAILY_SCRIPTS = \
-	securityUpdates
+	ku_security_updates
 
 build:
 	gunzip -c $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
@@ -80,7 +80,7 @@ install::
 		$(MAKE) prefix=$(ROOT)/$(PKGROOT)/$(NAME) install;\
 	)
 	
-	install -m 755 $(CRON_DAILY_SCRIPTS) ${CRON_DAILY_DIR}
+	install -m 700 $(CRON_DAILY_SCRIPTS) ${CRON_DAILY_DIR}
 
 clean::
 	rm -rf $(NAME)-$(VERSION)
