@@ -2,14 +2,14 @@
 
 ### time
 time_stamp () {
-    echo $1 `/bin/date` >> $LOG
+    echo $1 `/bin/date` >> $SCRIPT
 }
 
 ### create logfile
 set_log() {
-    LOG=/tmp/`/bin/basename $0`.log
-    rm $LOG
-    touch $LOG
+    SCRIPT=/tmp/`/bin/basename $0`.sh
+    rm $SCRIPT
+    touch $SCRIPT
 }
 
 ### Test whether array contains a value
@@ -26,27 +26,27 @@ element_in () {
 
 ### Add missing vlans to vm-container
 ### args: container vlan#
-add_vlans () {
-    echo "rocks add host interface" $1 "vlan"$2 >> $LOG
-    echo "rocks set host interface name" $1 "vlan"$2 $1 >> $LOG
-    echo "rocks set host interface subnet" $1 "vlan"$2 "private" >> $LOG
-    echo "rocks set host interface vlan" $1 "vlan"$2 $2 >> $LOG
-    echo >> $LOG
+write_vlan () {
+    echo "rocks add host interface" $1 "vlan"$2 >> $SCRIPT
+    echo "rocks set host interface name" $1 "vlan"$2 $1 >> $SCRIPT
+    echo "rocks set host interface subnet" $1 "vlan"$2 "private" >> $SCRIPT
+    echo "rocks set host interface vlan" $1 "vlan"$2 $2 >> $SCRIPT
+    echo >> $SCRIPT
 }
 
 ### Add missing vlans to vm-container ($1)
 ### args: container
-test_vlans () {
+add_vlan_commands () {
     VLANS=(1 2 3 4 5 6 7)
     EXISTING=(`rocks list host interface $NAME | awk '{print $8}' | grep -E "^[0-9]"`)
-    echo >> $LOG
-    echo "# Container" $1 "has vlans" ${EXISTING[@]} >> $LOG
+    echo >> $SCRIPT
+    echo "# Container" $1 "has vlans" ${EXISTING[@]} >> $SCRIPT
     for vlan in ${VLANS[@]}; do
         if element_in $vlan "${EXISTING[@]}"; then 
             echo 'Skipping existing vlan ' $vlan ' for container ' $1
         else
             echo 'Adding vlan ' $vlan ' to container ' $1
-            add_vlan $1 $vlan
+            write_vlan $1 $vlan
         fi
     done 
 }
@@ -59,8 +59,8 @@ VMCONTAINERS=`rocks list host membership vm-container | grep -v HOST | awk '{pri
 for vmc in $VMCONTAINERS; do
     # get the part before the colon 
     NAME=${vmc%:*}
-    test_vlans $NAME
+    add_vlan_commands $NAME
 done
-rocks sync config
+echo "rocks sync config" >> $SCRIPT
 
 time_stamp "# End"
