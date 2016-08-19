@@ -3,21 +3,15 @@
 IP=
 VLAN=
 NODE_CONTAINER=
-TEST=0
-NUM_NODES=
-NUM_NODE_CPUS=
-FE_MEM_B=
-FE_DISK_GB=
-NODE_MEM_B=
-NODE_DISK_GB=
 
 # Defaults
-# NUM_NODES=2
-# NUM_NODE_CPUS=1
-# FE_MEM_B=16384
-# FE_DISK_GB=100   #10000
-# NODE_MEM_B=8194
-# NODE_DISK_GB=30  #1000
+TEST=0
+NUM_NODES=2
+NUM_NODE_CPUS=1
+FE_MEM_MB=16384
+FE_DISK_GB=1000
+NODE_MEM_MB=8192
+NODE_DISK_GB=50
 
 for i in "$@"
 do
@@ -35,7 +29,7 @@ case $i in
         FE_DISK_GB="${i#*=}"
         shift
         ;;
-    -fm=*|--fe_mem_b=*)
+    -fm=*|--fe_mem_mb=*)
         FE_MEM_B="${i#*=}"
         shift
         ;;
@@ -55,7 +49,7 @@ case $i in
         NODE_DISK_GB="${i#*=}"
         shift
         ;;
-    -nm=*|--node_mem_b=*)
+    -nm=*|--node_mem_mb=*)
         NODE_MEM_B="${i#*=}"
         shift
         ;;
@@ -117,15 +111,15 @@ setParams () {
         TimeStamp "  Script called with: bash add-cluster.sh --ip=$IP \ "
         TimeStamp "                                          --vlan=$VLAN \ "
         TimeStamp "                                          --container_hosts=$NODE_CONTAINER \ "
-        TimeStamp "                                          --fe_size_gb=$FE_DISK_GB --fe_mem_b=$FE_MEM_B \ "
+        TimeStamp "                                          --fe_size_gb=$FE_DISK_GB --fe_mem_mb=$FE_MEM_MB \ "
         TimeStamp "                                          --node_count=$NUM_NODES --node_cpu_count=$NUM_NODE_CPUS \ "
-        TimeStamp "                                          --node_size_gb=$NODE_DISK_GB --node_mem_b=$NODE_MEM_B "
+        TimeStamp "                                          --node_size_gb=$NODE_DISK_GB --node_mem_mb=$NODE_MEM_MB "
 
     else
         echo "Usage:  bash add-cluster.sh --ip=<ip address> --vlan=<vlan #> --container_hosts=<compute nodes host> \ "
-        echo "                            --fe_size_gb=<frontend size in gb> --fe_mem_b=<frontend RAM in bytes> \ "
-        echo "                            --node_count=<number of compute nodes> --node_count=<number of compute nodes> \ "
-        echo "                            --node_size_gb=<node size in gb> --node_mem_b=<node RAM in bytes> "
+        echo "                            --fe_size_gb=<frontend size in gb> --fe_mem_mb=<frontend RAM in mb> \ "
+        echo "                            --node_count=<number of compute nodes> --node_cpu_count=<cores per node> \ "
+        echo "                            --node_size_gb=<node size in gb> --node_mem_mb=<node RAM in mb> "
         echo "        Possible node container hosts are: $vchosts"
         exit 1
     fi
@@ -146,8 +140,11 @@ addCluster () {
              cluster-naming=1 \
              fe-name=$FE_NAME \
              fe-container=$FE_CONTAINER \
+             disk-per-frontend=$FE_DISK_GB \
              container-hosts="$NODE_CONTAINER" \
              cpus-per-compute=$NUM_NODE_CPUS \
+             disk-per-compute=$NODE_DISK_GB \
+             mem-per-compute=$NODE_MEM_MB \
              vlan=$VLAN"
         TimeStamp "Creating cluster with command: $cmd"
         $COM $cmd
@@ -161,7 +158,7 @@ setDisksMem () {
     cnodes=`rocks list cluster $FE_NAME | tail -n +3 |  awk '{print $2}'`
     for h in $cnodes;
     do  
-        cmd="rocks set host vm $h disk="file:/state/partition1/kvm/disks/$h.vda,vda,virtio" disksize=$NODE_DISK_GB mem=$NODE_MEM_B"
+        cmd="rocks set host vm $h disk="file:/state/partition1/kvm/disks/$h.vda,vda,virtio"
         TimeStamp "Setting node disk with command: $cmd"
         $COM $cmd
     done
@@ -175,7 +172,11 @@ setDisksMem () {
        TimeStamp "ZFS tank/vms/$FE_NAME exists"
     fi
 
-    cmd="rocks set host vm $FE_NAME disk="file:/tank/vms/kvm/disks/$FE_NAME.vda,vda,virtio" disksize=$FE_DISK_GB mem=$FE_MEM_B"
+    cmd="rocks set host vm $FE_NAME disk="file:/tank/vms/kvm/disks/$FE_NAME.vda,vda,virtio" disksize=$FE_DISK_GB
+    TimeStamp "Setting FE disk with command $cmd"
+    $COM $cmd
+
+    cmd="rocks set host vm $FE_NAME mem=$FE_MEM_B"
     TimeStamp "Setting FE disk with command $cmd"
     $COM $cmd
 }
