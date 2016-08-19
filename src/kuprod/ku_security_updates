@@ -67,6 +67,18 @@ TimeStamp () {
 }
 
 # ....................................
+### Remove old roll
+# ....................................
+RemoveOldRoll() {
+   OLD_VERSION=`rocks list roll | grep $ROLLNAME | awk '{print $2}'`
+   if [ "$OLD_VERSION" != "" ]; then 
+      rocks remove roll $ROLLNAME version=$OLD_VERSION
+   else
+      echo "Roll $ROLLNAME is not installed"  | tee -a $LOG
+   fi
+}
+
+# ....................................
 ### Make and install new roll
 # ....................................
 PrepareRoll() {
@@ -104,6 +116,7 @@ if [ $# -ne 0 ]; then
 fi 
 
 SetDefaults
+RemoveOldRoll
 PrepareRoll
 if [ "$EXISTING_ROLL" = true ]; then
     ApplyUpdates
