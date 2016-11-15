@@ -65,23 +65,33 @@ CRON_DAILY_DIR=/etc/cron.daily/
 CRON_DAILY_SCRIPTS = \
 	ku_security_updates
 
+BIN_SCRIPTS = \
+	add-cluster.sh \
+	add-switch.sh  \
+	add-vcluster-old.sh  \
+	free-memory.sh  \
+	lmdeveloper.sh  \
+	write-vlan-commands.sh
+
 build:
-	gunzip -c $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
-	( 							\
-		cd $(NAME)-$(VERSION);				\
-		./configure --prefix=$(PKGROOT)/$(NAME);	\
-		$(MAKE);					\
-	)
+#	gunzip -c $(NAME)-$(VERSION).$(TARBALL_POSTFIX) | $(TAR) -xf -
+#	( 							\
+#		cd $(NAME)-$(VERSION);				\
+#		./configure --prefix=$(PKGROOT)/$(NAME);	\
+#		$(MAKE);					\
+#	)
 	
 install::
-	mkdir -p $(ROOT)/$(PKGROOT)/$(NAME)
-	(							\
-		cd $(NAME)-$(VERSION);				\
-		$(MAKE) prefix=$(ROOT)/$(PKGROOT)/$(NAME) install;\
-	)
+	mkdir -p $(ROOT)/$(PKGROOT)
+	mkdir -p $(ROOT)/$(PKGROOT)/bin
+	mkdir -p $(ROOT)/$(CRON_DAILY_DIR)
+#	(							\
+#		cd $(NAME)-$(VERSION);				\
+#		$(MAKE) prefix=$(ROOT)/$(PKGROOT)/$(NAME) install;\
+#	)
 	
-	install -m 700 $(CRON_DAILY_SCRIPTS) ${CRON_DAILY_DIR}
+	install -m 700 $(CRON_DAILY_SCRIPTS) $(ROOT)/${CRON_DAILY_DIR}
+	install -m 755 $(BIN_SCRIPTS) $(ROOT)/$(PKGROOT)/bin
 
 clean::
 	rm -rf $(NAME)-$(VERSION)
-	rm -rf $(SCRIPTS)

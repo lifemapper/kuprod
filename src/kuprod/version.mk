@@ -1,5 +1,5 @@
-PKGROOT		= /opt/kuprod
-NAME        = test
-VERSION     = 1.0
+PKGROOT	    = /opt/kuprod
+NAME        = kuprod
+VERSION     = 1.1
 RELEASE 	= 1
 TARBALL_POSTFIX	= tgz
