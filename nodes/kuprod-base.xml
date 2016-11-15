@@ -1,24 +1,26 @@
 <?xml version="1.0" standalone="no"?>
 
-<kickstart>
-
+<graph>
 
 	<description>
-	Your kuprod roll description here
+
+	The KU Production Server Roll
+
 	</description>
 
 	<copyright>
-	Copyright (c) 2000 - 2014 The Regents of the University of California.
-	All rights reserved. Rocks(r) 6.2 www.rocksclusters.org
-	
+	Copyright (c) 2000 - 2012 The Regents of the University of California.
+	All rights reserved. Rocks(r) v5.5/v6.0 www.rocksclusters.org
 	</copyright>
 
 	<changelog>
-	$Log$
 	</changelog>
 
-	<package>kuprod</package>
-	<package>roll-kuprod-usersguide</package>
-	<package>screen</package>
+        <edge from="server" to="kuprod"/>
 
-</kickstart>
+
+        <order head="TAIL">
+                <tail>kuprod</tail>
+        </order>
+
+</graph>
