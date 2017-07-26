@@ -71,6 +71,7 @@ BIN_SCRIPTS = \
 	add-vcluster-old.sh  \
 	free-memory.sh  \
 	lmdeveloper.sh  \
+	udpate-security-roll  \
 	write-vlan-commands.sh
 
 build:

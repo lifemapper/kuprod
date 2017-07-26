@@ -45,15 +45,19 @@ CreateCluster () {
    rocks add host vm notyeti name=$name cpus=2 membership="Hosted VM"
    rocks set host vm $name mem=16384  
    rocks set host vm $name disk="phy:/dev/tank/vms/$name,vda,virtio"
-   rocks set host vm $name  disksize=100
+   rocks set host vm $name  disksize=200
 }
 
 
 SetDefaults
-name=notyeti-1
+CreateCluster
+CreateVolume
+TimeStamp
 
-zfs create -V tank/vms/$name
-rocks add host vm notyeti name=$name cpus=2 membership="Hosted VM"
-rocks set host vm $name mem=16384  
-rocks set host vm $name disk="phy:/dev/tank/vms/$name,vda,virtio"
-rocks set host vm $name  disksize=100
+# name=notyeti-1
+
+# zfs create -V tank/vms/$name
+# rocks add host vm notyeti name=$name cpus=2 membership="Hosted VM"
+# rocks set host vm $name mem=16384  
+# rocks set host vm $name disk="phy:/dev/tank/vms/$name,vda,virtio"
+# rocks set host vm $name  disksize=100

@@ -34,6 +34,7 @@ usage ()
 ### define varibles
 # ....................................
 SetDefaults () {
+   THISNAME=`/bin/basename $0`
    PREVDIR=`pwd`
    WORKINGDIR=/state/partition1/site-roll/rocks/src/roll/security-updates
    ROLLNAME=os-6.2-security-updates
@@ -52,10 +53,9 @@ SetDefaults () {
    OLD_VERSION=`rocks list roll | grep $ROLLNAME | awk '{print $2}'`
    VERSION=$(date +%F | tr - _)
 
-   LOG=/tmp/`/bin/basename $0`.log
+   LOG=/tmp/$THISNAME.log
    rm $LOG
    touch $LOG
-   TimeStamp "# Start"
    echo Creating new security update roll for $BASEHOSTNAME >> $LOG
    echo Old and New Versions are $OLD_VERSION $VERSION >> $LOG
 }
@@ -116,6 +116,7 @@ if [ $# -ne 0 ]; then
 fi 
 
 SetDefaults
+TimeStamp "# Start $THISNAME"
 PrepareRoll
 if [ "$EXISTING_ROLL" = true ]; then
     ApplyUpdates
@@ -124,4 +125,5 @@ else
     echo $ROLLNAME "roll does not exist" >> $LOG
 fi
 SendEmailAndReturn
+TimeStamp "# End $THISNAME"
 

@@ -7,27 +7,64 @@
 ### define varibles
 # ....................................
 SetDefaults () {
+   # Date for names
+   DATE=`date +%Y-%m-%d`
+   MONTH=`date +%B`
+   YEAR=`date +%Y`
+
    # location of saved  files
-   LOGDIR=/tank/root/logs/var/
+   SAVELOGDIR=/tank/root/logs/var/
+   LOG=$SAVELOGDIR/`/bin/basename $0`-$DATE.log
+   rm -f $LOG
+   touch $LOG
+
+   # tripwire files
+   TWLOGDIR=/var/www/html/tripwire
+
+   # various log files
+   CRONFILES=/var/log/cron-*.gz
+   MSGFILES=/var/log/messages-*.gz
+   SECFILES=/var/log/secure-*.gz
 
    # root's mail file
    MAILFILE=/var/spool/mail/root
    LMMAILFILE=/var/spool/mail/lmwriter
 
    # saved mail file name with timestamp
-   DATE=`date +%Y-%m-%d`
    OLD_MAILFILE=$LOGDIR/mail/root-mail-$DATE
    OLD_LMMAILFILE=$LOGDIR/mail/lmwriter-mail-$DATE
 
-   if [ ! -d $LOGDIR/mail ] ; then
-      mkdir -p $LOGDIR/mail
+   if [ ! -d $SAVELOGDIR/mail ] ; then
+      mkdir -p $SAVELOGDIR/mail
    fi
    
-   if [ ! -d $LOGDIR/pgbouncer ] ; then
-      mkdir -p $LOGDIR/pgbouncer
+   if [ ! -d $SAVELOGDIR/pgbouncer ] ; then
+      mkdir -p $SAVELOGDIR/pgbouncer
    fi
+
+   if [ ! -d $SAVELOGDIR/tripwire ] ; then
+      mkdir -p $SAVELOGDIR/tripwire
+   fi
+   
 }
 
+TimeStamp () {
+    echo $1 `/bin/date` >> $LOG
+}
+
+# ....................................
+### save misc compressed log files
+# ....................................
+SaveMisc () {
+   CRONFILES=/var/log/cron-*.gz
+   MSGFILES=/var/log/messages-*.gz
+   SECFILES=/var/log/secure-*.gz
+
+   # move files
+   mv $CRONFILES $SAVELOGDIR\
+   mv $MSGFILES $SAVELOGDIR\
+   mv $SECFILES $SAVELOGDIR\
+}
 
 # ....................................
 ### save mail files
@@ -45,3 +82,31 @@ SaveMail () {
    fi
 }
 
+# ....................................
+### save tripwire files
+# ....................................
+SaveTripwire () {
+   THISMONTH=`date +%m`
+   if [ $THISMONTH eq 1 ] ; then
+      LASTMONTH=12
+      SAVEYEAR=$[$YEAR-1]
+   else 
+      LASTMONTH=$[$THISMONTH-1]
+      SAVEYEAR=$YEAR
+   fi
+   SAVEMONTH=`date +%B --date=$SAVEYEAR-$LASTMONTH-1`
+   LASTDIR=$SAVEMONTH-$SAVEYEAR
+   # compress old files
+   tar -cvzf $SAVELOGDIR/tripwire/$LASTDIR.tar.gz $LASTDIR
+}
+
+
+# ..............................................................................
+# ..............................................................................
+
+SetDefaults
+TimeStamp "# Start"
+SaveMisc
+SaveMail
+SaveTripwire
+TimeStamp "# End"
