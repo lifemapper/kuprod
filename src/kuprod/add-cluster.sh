@@ -10,14 +10,13 @@ FE_MEM_MB=16384
 NUM_NODES=6
 NODE_CPUS=2
 NODE_DISK_GB=50
-
-# Change these explicitely at the command prompt if you wantto change
-# Command: rocks set host vm <vm-node-name> mem=<mem-in-Mb>
 NODE_MEM_MB=8192
 
-# Nodes are assigned round-robin.  If some VM containers do not have enough
-# resources, re-assign virtual nodes to other VM containers
+# Nodes are assigned round-robin. VM containers have different capacities, so
+# re-assign virtual nodes to other VM containers, and modify memory as needed.
 # Command: rocks set host vm <vm-node-name> physnode=<vm-container-name>
+# Command: rocks set host vm <vm-node-name> mem=<mem-in-Mb>
+
 for i in "$@"
 do
 case $i in
@@ -184,17 +183,9 @@ addCluster
 setDisksMem
 
 
-bash add-cluster.sh --ip=129.237.201.192 \
-                    --vlan=4 \
-                    --fe_size_gb=200 \
-                    --fe_mem_mb=16384 \
-                    --node_count=6 \
-                    --node_cpu_count=2 \
-                    --node_size_gb=50 \
-                    --node_mem_mb=16384 \
-                    --test
-# name=notyeti-1
+# bash add-cluster.sh --ip=129.237.201.192 --vlan=4 --node_count=6
 
+# name=notyeti-1
 # zfs create -V tank/vms/$name
 # rocks add host vm notyeti name=$name cpus=2 membership="Hosted VM"
 # rocks set host vm $name mem=16384  
