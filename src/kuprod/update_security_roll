@@ -57,7 +57,7 @@ SetDefaults () {
    rm $LOG
    touch $LOG
    echo Creating new security update roll for $BASEHOSTNAME >> $LOG
-   echo Old and New Versions are $OLD_VERSION $VERSION >> $LOG
+   echo Old Version: $OLD_VERSION and New Version: $VERSION >> $LOG
 }
 
 # ....................................
