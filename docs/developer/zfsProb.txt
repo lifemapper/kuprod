@@ -1,0 +1,33 @@
+## Look for kernel version
+uname -a
+
+## Look for kernel version of these files
+find /lib/modules | grep spl.ko
+
+## Delete zfs and spl dirs under weak-updates 
+ll /lib/modules/2.6.32-642.*/weak-updates/spl
+rm -rf /lib/modules/2.6.32-642.6.2.el6.x86_64/weak-updates/spl
+rm -rf /lib/modules/2.6.32-642.6.2.el6.x86_64/weak-updates/zfs
+rm -rf /lib/modules/2.6.32-642.3.1.el6.x86_64/weak-updates/spl
+rm -rf /lib/modules/2.6.32-642.3.1.el6.x86_64/weak-updates/zfs
+
+## Try to restart service
+service zfs-modules start
+
+## If no success, rebuild zfs roll
+cd /opt/zfs/zfs-linux-roll-source/
+make binary-roll
+
+## Add roll
+rocks add roll zfs-linux-0.6.4.1-1.x86_64.disk1.iso clean=1
+rocks enable roll zfs-linux
+(cd /export/rocks/install; rocks create distro; yum clean all)
+
+## Install roll
+rocks run roll zfs-linux > add-zfslinux.sh
+bash add-zfslinux.sh  2>&1 | tee add-zfslinux.out
+
+## Install roll
+reboot
+
+zfs list
