@@ -19,10 +19,10 @@ zfs set sharenfs="rw=@192.168.202.0/24,no_root_squash,async" tank/data
 zfs set sharenfs=on tank/data
 
 # 3. Create slice for VM, limit size, and set sharenfs
-zfs create tank/data/data1
-zfs set quota=2T tank/data/data1
-zfs set sharenfs="rw=@192.168.190.0/24,no_root_squash,async,no_all_squash,rw=@192.168.202.0/24,no_root_squash,async,no_all_squash" tank/data/data1
+zfs create tank/data/data-190
+zfs set quota=2T tank/data/data-190
+zfs set sharenfs="rw=@192.168.190.0/24,no_root_squash,async,no_all_squash,rw=@192.168.202.0/24,no_root_squash,async,no_all_squash" tank/data/data-190
 
 ########## on notyeti-190, add entry in /etc/auto.share
 # 192.168.190.2 is the subnet for NAS to vlan2
-# data1 -fstype=nfs4,tcp,noacl,nodev,nosuid 192.168.190.2:/tank/data/data1
+# data -fstype=nfs4,tcp,noacl,nodev,nosuid 192.168.190.2:/tank/data/data-190

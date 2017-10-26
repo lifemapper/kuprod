@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# IP=129.237.201.194
-# VLAN=6
+IP=129.237.201.193
+VLAN=5
 
 # Defaults
 TEST=0
+FE_CPUS=2
 FE_DISK_GB=200
 FE_MEM_MB=16384
 NUM_NODES=6
@@ -27,6 +28,10 @@ case $i in
         ;;
     -v=*|--vlan=*)
         VLAN="${i#*=}"
+        shift
+        ;;
+    -fc=*|--fe_cpu_count=*)
+        FE_CPUS="${i#*=}"
         shift
         ;;
     -fs=*|--fe_size_gb=*)

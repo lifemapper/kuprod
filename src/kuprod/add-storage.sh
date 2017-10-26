@@ -28,6 +28,7 @@ SetDefaults () {
 
 # 2. add nas interface for VLAN=2 used for notyeti-190 clsuter
 # the interface em1 is the private interface, and ".2" has to correspond to the VLAN ID.
+# the last quartet of the private IP is "2"
 /opt/rocks/bin/rocks add host interface nas-0-0 em1.2
 /opt/rocks/bin/rocks set host interface ip nas-0-0 em1.2 192.168.190.2
 /opt/rocks/bin/rocks set host interface name nas-0-0 em1.2 nas-0-0

@@ -56,8 +56,8 @@ SetDefaults () {
    LOG=/tmp/$THISNAME.log
    rm $LOG
    touch $LOG
-   echo Creating new security update roll for $BASEHOSTNAME >> $LOG
-   echo Old Version: $OLD_VERSION and New Version: $VERSION >> $LOG
+   echo "Creating new security update roll for $BASEHOSTNAME"  | tee -a $LOG
+   echo "Old Version: $OLD_VERSION and New Version: $VERSION"  | tee -a $LOG
 }
 
 # ....................................
@@ -72,6 +72,7 @@ TimeStamp () {
 # ....................................
 RemoveOldRoll() {
    if [ "$OLD_VERSION" != "" ]; then 
+      echo "Removing roll $ROLLNAME  version=$OLD_VERSION ..."  | tee -a $LOG
       rocks remove roll $ROLLNAME version=$OLD_VERSION  | tee -a $LOG
    else
       echo "Roll $ROLLNAME is not installed"  | tee -a $LOG
@@ -82,6 +83,7 @@ RemoveOldRoll() {
 ### Make and install new roll
 # ....................................
 PrepareRoll() {
+   echo "Preparing roll $ROLLNAME-$VERSION ..."  | tee -a $LOG
    cd $WORKINGDIR
    make roll
    rocks add roll $ROLLNAME-$VERSION-0.x86_64.disk1.iso
@@ -94,6 +96,7 @@ PrepareRoll() {
 ### email logfile output
 # ....................................
 SendEmailAndReturn () {
+   echo "Send email to $TO ..."  | tee -a $LOG
    TimeStamp "# End"
    /usr/sbin/sendmail -i -F $BASEHOSTNAME  "$TO"  < $LOG
    cd $PREVDIR
@@ -103,6 +106,7 @@ SendEmailAndReturn () {
 ### Apply the new updates
 # ....................................
 ApplyUpdates () {
+   echo "Apply updates ..."  | tee -a $LOG
    yum check-update  | tee -a $LOG
    yum update | tee -a $LOG
 }
