@@ -52,8 +52,14 @@ create_devapp dev-1
 
 # rocks add host vm notyeti name=vmdevel-0-0 cpus=2 membership="Hosted VM"
 # rocks set host vm vmdevel-0-0 mem=4096
-rocks set host interface subnet vmdevel-0-0 eth0 private
-rocks set host interface ip vmdevel-0-0 eth0 192.168.202.244
-
-
+# rocks set host interface subnet vmdevel-0-0 eth0 private
+# rocks set host interface ip vmdevel-0-0 eth0 192.168.202.244
+# rocks set host vm vmdevel-0-0 disksize=75
 # 
+
+name=rollme
+zfs create -V 150G tank/vms/${name}
+rocks add host vm notyeti name=${name} cpus=2 membership="Development Appliance"
+rocks set host vm ${name} disk='phy:/dev/tank/vms/${name},vda,virtio'
+rocks set host vm ${name} disksize=150
+rocks set host vm ${name} mem=4096
