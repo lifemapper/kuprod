@@ -58,8 +58,8 @@ create_devapp dev-1
 # 
 
 name=rollme
-zfs create -V 150G tank/vms/${name}
+zfs create -V 50G tank/vms/${name}
 rocks add host vm notyeti name=${name} cpus=2 membership="Development Appliance"
 rocks set host vm ${name} disk='phy:/dev/tank/vms/${name},vda,virtio'
-rocks set host vm ${name} disksize=150
+rocks set host vm ${name} disksize=50
 rocks set host vm ${name} mem=4096

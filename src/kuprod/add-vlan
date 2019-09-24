@@ -1,0 +1,62 @@
+# ....................................
+# ### usage help
+# # ....................................
+
+usage () 
+{
+    echo ""
+    echo "Usage: $0 <vlan-number>  [<localhost or vm-container-rank-number>]"
+    echo "This script is run to add a vlan to one or all machines"
+    echo "If the optional second parameter is included, it should be 'localhost' or the "
+    echo "   rank-number of the VM container for the vlan. "
+    echo "If only the first parameter is provided, the script will add the desired vlan "
+    echo "   to localhost and all vm-containers"
+    echo ""
+}
+
+# ....................................
+### set VMs disks and memory
+# ....................................
+add-vlan-to-machine () {
+    VL=$1
+    MACHINE=$2
+    if [ $MACHINE = 'localhost' ]; then
+        HN=notyeti        
+    else
+        HN=$MACHINE
+    fi
+ 
+    /opt/rocks/bin/rocks add host interface $MACHINE vlan$VL
+    /opt/rocks/bin/rocks set host interface name   $MACHINE vlan$VL $HN
+    /opt/rocks/bin/rocks set host interface subnet $MACHINE vlan$VL private
+    /opt/rocks/bin/rocks set host interface vlan   $MACHINE vlan$VL $VL
+}
+
+# ....................................
+### main
+# ....................................
+
+VLAN=$1
+if [ $# -eq 1 ]; then
+   echo 'adding VLAN' $VLAN 'to localhost ...'
+   add-vlan-to-machine $VLAN localhost
+   for i in {0..5}; do 
+       MACHINE=vm-container-0-$i
+       echo 'adding VLAN ' $VLAN ' to MACHINE = ' $MACHINE 
+       add-vlan-to-machine $VLAN $MACHINE
+   done
+elif [ $# -eq 2 ]; then
+    if [ $2 = 'localhost' ]; then
+        MACHINE=$2       
+    else
+        MACHINE=vm-container-0-$2
+    fi
+    echo 'adding VLAN ' $VLAN ' to MACHINE = ' $MACHINE 
+    add-vlan-to-machine $VLAN $MACHINE
+else
+    usage
+    exit 0
+fi
+
+#/opt/rocks/bin/rocks sync config
+

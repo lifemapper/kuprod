@@ -3,11 +3,15 @@
 ### define varibles
 # ....................................
 SetDefaults () {
-   idx=`expr index $HOSTNAME .`
-   BASEHOSTNAME=${HOSTNAME:0:idx-1}
-   
    VC=$1
    VLAN=$2
+    
+   idx=`expr index $HOSTNAME .`
+   BASEHOSTNAME=${HOSTNAME:0:idx-1}
+   PRIVATE_IP=`/opt/rocks/bin/rocks list host attr $BASEHOSTNAME | grep Kickstart_PrivateAddress | awk '{print $3}'` 
+   PRIVATE_NETWORK=`/opt/rocks/bin/rocks list host attr $BASEHOSTNAME | grep Kickstart_PrivateNetwork | awk '{print $3}'`
+   PRIVATE_IFACE=`/opt/rocks/bin/rocks list host attr $BASEHOSTNAME | grep Kickstart_PrivateInterface | awk '{print $3}'`
+
 
    LOG=/tmp/`/bin/basename $0`.log
    rm $LOG
@@ -16,15 +20,16 @@ SetDefaults () {
    echo Creating new security update roll for $BASEHOSTNAME
 }
 
+
 # 2017-06-30
 # adding interface for the storage network on FE
 
-# This example is for VC notyeti-190 with:
-#    public IP 129.237.201.190 and 
-#    private network 192.168.190.x
+# This example is for VC notyeti-195 with:
+#    public IP 129.237.201.195 and 
+#    private network 192.168.195.x
 
 # 1. add a network
-/opt/rocks/bin/rocks add network storage-190 subnet=192.168.190.0 netmask=255.255.255.0 mtu=1500
+/opt/rocks/bin/rocks add network storage-195 subnet=192.168.195.0 netmask=255.255.255.0 mtu=1500
 
 # 2. add nas interface for VLAN=2 used for notyeti-190 clsuter
 # the interface em1 is the private interface, and ".2" has to correspond to the VLAN ID.
