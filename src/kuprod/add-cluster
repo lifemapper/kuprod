@@ -168,7 +168,10 @@ setDisksMem () {
     for h in $cnodes;
     do  
         cmd="rocks set host vm $h disk=file:/state/partition1/kvm/disks/$h.vda,vda,virtio"
-        TimeStamp "Setting node disk"
+        TimeStamp "Setting node disk file"
+        $COM $cmd
+        cmd="rocks set host vm $h disksize=$NODE_DISK_GB"
+        TimeStamp "Setting node disk size"
         $COM $cmd
     done
 
